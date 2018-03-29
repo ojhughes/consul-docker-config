@@ -1,0 +1,15 @@
+version: "2"
+  
+services:
+
+  consul-agent:
+    extends:
+      file: docker-compose-common.yml
+      service: consul
+
+  registrator:
+    extends:
+      file: docker-compose-common.yml
+      service: registrator
+    depends_on:
+      - consul-agent

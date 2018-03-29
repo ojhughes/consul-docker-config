@@ -1,0 +1,20 @@
+export VAULT_ADDR=http://vault.service.consul:8200<Paste>
+export VAULT_TOKEN=$(consul kv get  /service/vault/app1-token)
+export CONSUL_HTTP_ADDR=consul.service.consul:8500
+consul kv get -recurse /service
+consul kv put /shared/gym "Pewter Gym"
+consul kv put config-app-1/pokemon magikarp
+consul kv put config-app-2/pokemon bulbasaur
+vault write secret/config-app-1/nextmove value=bash
+vault write secret/config-app-2/nextmove value=tackle
+consul kv get -recurse vault/logical
+
+docker build -t ojhughes/cloud-native-config-app .
+
+#New SSH session
+dc logs -f registrator
+#New SSH consul-server
+dc logs -f consul-server
+
+docker run --net=host --name=config-app-1 -e SERVICE_NAME=config-app-1 ojhughes/cloud-native-config-app:latest
+docker run --net=host --name=config-app-2 -e SERVICE_NAME=config-app-2 ojhughes/cloud-native-config-app:latest

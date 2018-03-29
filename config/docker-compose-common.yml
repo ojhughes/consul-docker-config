@@ -1,0 +1,27 @@
+version: "2"
+services:
+  dnsmasq:
+    image: jpillora/dnsmasq
+    volumes:
+      - $HOME/docker/dnsmasq.conf:/etc/dnsmasq.conf
+      - $HOME/docker/dnsmasq-hosts.txt:/etc/dnsmasq-hosts.txt
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+
+  consul:
+    image: library/consul:1.0.6
+    command: agent -server -disable-host-node-id -client=0.0.0.0 -bind=${HOST_IP} -retry-join=consul.host.test
+    network_mode: host
+    volumes:
+      - $HOME/consul-data:/consul/data
+    environment:
+      - SERVICE_NAME=consul-agent
+
+  registrator:
+    image: gliderlabs/registrator:latest
+    command: consul://${HOST_IP}:8500
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+

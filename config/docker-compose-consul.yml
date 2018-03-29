@@ -1,0 +1,17 @@
+version: "2"
+  
+services:
+  dnsmasq:
+    extends:
+      file: docker-compose-common.yml
+      service: dnsmasq
+
+  consul-server:
+    extends:
+      file: docker-compose-common.yml
+      service: consul
+    command: agent -server -client=0.0.0.0 -bind=${HOST_IP} -ui -bootstrap-expect=1
+    environment:
+      - SERVICE_NAME=consul-server
+    depends_on:
+      - dnsmasq

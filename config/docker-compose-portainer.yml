@@ -1,0 +1,12 @@
+version: "3"
+services:
+  portainer:
+    image: portainer/portainer:1.16.2
+    command: --external-endpoints /endpoints/endpoints.json
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/portainer:/data
+      - $HOME/docker/portainer-endpoints:/endpoints
+    ports:
+      - 9000:9000
+

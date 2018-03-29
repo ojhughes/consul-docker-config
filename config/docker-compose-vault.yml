@@ -1,0 +1,29 @@
+version: "2"
+  
+services:
+
+  consul-agent:
+    extends:
+      file: docker-compose-common.yml
+      service: consul
+
+  registrator:
+    extends:
+      file: docker-compose-common.yml
+      service: registrator
+    depends_on:
+      - consul-agent
+
+  vault:
+    container_name: vault.server
+    image: vault
+    network_mode: host
+    ports:
+      - 8200:8200
+    depends_on:
+      - consul-agent
+    cap_add:
+      - IPC_LOCK
+    environment:
+      - VAULT_LOCAL_CONFIG={"backend":{"consul":{"address":"consul.service.consul:8500","advertise_addr":"http://${HOST_IP}","path":"vault/"}},"listener":{"tcp":{"address":"0.0.0.0:8200","tls_disable":1}}}
+    command: server
